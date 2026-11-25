@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agrotres S.A. · Sistema de Gestión de Calidad e Inocuidad</title>
+  <style>
+    :root {
+      --primary: #1b365d;
+      --primary-light: #2c5282;
+      --accent: #2b6cb0;
+      --bg: #f4f6f9;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #dbe2ea;
+      --ok: #15803d;
+      --ok-bg: #dcfce7;
+      --warn: #b45309;
+      --warn-bg: #fef3c7;
+      --err: #b91c1c;
+      --err-bg: #fee2e2;
+      --radius: 10px;
+    }
+    * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+    body { margin: 0; background: var(--bg); color: var(--text); }
+    header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: #fff; padding: 14px 24px; display: flex; flex-wrap: wrap;
+      align-items: center; justify-content: space-between; gap: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-badge {
+      width: 42px; height: 42px; border-radius: 8px; background: rgba(255,255,255,0.16);
+      display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px;
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+    .brand h1 { margin: 0; font-size: 18px; letter-spacing: 0.2px; }
+    .brand p { margin: 2px 0 0; font-size: 12px; opacity: 0.88; }
+    .top-actions { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+    .status-pill {
+      background: rgba(22, 163, 74, 0.25); border: 1px solid #4ade80; color: #dcfce7;
+      padding: 4px 10px; border-radius: 999px; font-weight: 600; display: flex; align-items: center; gap: 6px;
+    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: #4ade80; }
+    .btn-top {
+      background: rgba(255,255,255,0.14); color: #fff; border: 1px solid rgba(255,255,255,0.28);
+      padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;
+    }
+    .btn-top:hover { background: rgba(255,255,255,0.24); }
+
+    /* Login Card */
+    .login-wrap { max-width: 420px; margin: 48px auto; padding: 0 16px; }
+    .card {
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 20px; box-shadow: 0 2px 6px rgba(15,23,42,0.04); margin-bottom: 18px;
+    }
+    .card h2 { margin: 0 0 6px; font-size: 18px; color: var(--primary); }
+    .card .sub { margin: 0 0 16px; font-size: 13px; color: var(--muted); }
+    label { display: block; font-size: 12px; font-weight: 600; color: #334155; margin-bottom: 4px; }
+    input, select, textarea {
+      width: 100%; padding: 9px 11px; border: 1px solid var(--border); border-radius: 6px;
+      font-size: 13px; background: #fff; color: var(--text); margin-bottom: 12px;
+    }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(43,108,176,0.12); }
+    .btn {
+      background: var(--primary); color: #fff; border: none; padding: 10px 16px;
+      border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;
+    }
+    .btn:hover { background: var(--primary-light); }
+    .btn-sec { background: #e2e8f0; color: #1e293b; }
+    .btn-sec:hover { background: #cbd5e1; }
+    .btn-ok { background: var(--ok); }
+    .btn-sm { padding: 6px 10px; font-size: 12px; }
+
+    /* Main App */
+    .container { max-width: 1180px; margin: 20px auto; padding: 0 16px; }
+    .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .tab {
+      background: #fff; border: 1px solid var(--border); color: var(--text); padding: 9px 14px;
+      border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600;
+    }
+    .tab.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
+    .kpi {
+      background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 14px;
+    }
+    .kpi .lbl { font-size: 12px; color: var(--muted); font-weight: 600; }
+    .kpi .val { font-size: 22px; font-weight: 800; color: var(--primary); margin-top: 4px; }
+    table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-top: 10px; }
+    th, td { border: 1px solid var(--border); padding: 8px 10px; text-align: left; }
+    th { background: #f1f5f9; color: var(--primary); font-weight: 700; }
+    .badge { padding: 3px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; display: inline-block; }
+    .b-ok { background: var(--ok-bg); color: var(--ok); }
+    .b-warn { background: var(--warn-bg); color: var(--warn); }
+    .b-err { background: var(--err-bg); color: var(--err); }
+    .hidden { display: none !important; }
+    .section-title {
+      font-size: 14px; font-weight: 700; color: var(--primary); margin: 14px 0 8px;
+      padding-bottom: 4px; border-bottom: 2px solid #e2e8f0;
+    }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    @media print {
+      header .top-actions, .tabs, .no-print { display: none !important; }
+      body { background: #fff; }
+      .card { box-shadow: none; border: 1px solid #999; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="brand-badge">AG3</div>
+      <div>
+        <h1>Frigorífico Agrotres S.A. · Gestión de Calidad e Inocuidad</h1>
+        <p>Establecimiento Oficial SENASA N.º 5258 · Dolavon, Chubut · Planta Faena y Subproductos (Grasería)</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <span class="status-pill"><span class="dot"></span> En línea</span>
+      <button class="btn-top" onclick="toggleHelp()">Ayuda</button>
+      <button class="btn-top hidden" id="btnLogout" onclick="logout()">Salir</button>
+    </div>
+  </header>
+
+  <!-- MODAL / CAJA DE AYUDA -->
+  <div class="container hidden" id="helpBox">
+    <div class="card" style="border-left: 4px solid var(--accent);">
+      <div class="toolbar">
+        <h2 style="margin:0;">Guía Rápida de Uso — Portal Calidad Agrotres</h2>
+        <button class="btn btn-sec btn-sm" onclick="toggleHelp()">Cerrar</button>
+      </div>
+      <p style="font-size:13px; line-height:1.5; margin:6px 0;">
+        Este portal centraliza la documentación y los registros operativos diarios en un único entorno digital.
+        Los datos cargados se guardan automáticamente en este navegador y pueden exportarse a <b>CSV (Excel)</b> o imprimirse en formato <b>A4</b> para archivo físico de auditoría.
+      </p>
+      <p style="font-size:12px; color:var(--muted); margin:0;">
+        <b>Acceso rápido de prueba:</b> Sector/Planta: <code>AG3-5258</code> · Clave: <code>calidad2026</code>
+      </p>
+    </div>
+  </div>
+
+  <!-- PANTALLA DE ACCESO -->
+  <div class="login-wrap" id="loginView">
+    <div class="card">
+      <h2>Acceso al Sistema de Gestión</h2>
+      <p class="sub">Ingresá con el código de establecimiento y tu clave operativa</p>
+      <form onsubmit="handleLogin(event)">
+        <label>Establecimiento / Sector</label>
+        <input type="text" id="loginUser" value="AG3-5258" required />
+        <label>Clave de acceso</label>
+        <input type="password" id="loginPass" value="calidad2026" required />
+        <button type="submit" class="btn" style="width:100%;">Ingresar al Portal</button>
+      </form>
+      <p style="font-size:11.5px; color:var(--muted); margin-top:12px; text-align:center;">
+        Responsable SGC: Lic. Macarena Schischke · Control de Inocuidad y Trazabilidad
+      </p>
+    </div>
+  </div>
+
+  <!-- APLICACIÓN PRINCIPAL -->
+  <div class="container hidden" id="appView">
+    <div class="tabs no-print">
+      <button class="tab active" onclick="showTab('tab-diario', this)">1. Registro Diario Consolidado</button>
+      <button class="tab" onclick="showTab('tab-lotes', this)">2. Liberación de Lotes y Despacho</button>
+      <button class="tab" onclick="showTab('tab-periodico', this)">3. Controles Semanales / Mensuales</button>
+      <button class="tab" onclick="showTab('tab-docs', this)">4. Manuales y Documentos Vigentes</button>
+    </div>
+
+    <!-- TAB 1: REGISTRO DIARIO CONSOLIDADO -->
+    <div id="tab-diario" class="tab-panel">
+      <div class="grid-3" style="margin-bottom:14px;">
+        <div class="kpi"><div class="lbl">Registros Diarios Guardados</div><div class="val" id="kpiDiarios">0</div></div>
+        <div class="kpi"><div class="lbl">Último Lote Registrado</div><div class="val" id="kpiUltimoLote">—</div></div>
+        <div class="kpi"><div class="lbl">Estado PCC-1 / PCC-2 Hoy</div><div class="val" id="kpiEstadoHoy">Sin carga</div></div>
+      </div>
+
+      <div class="card">
+        <div class="toolbar">
+          <div>
+            <h2>Registro Diario Consolidado de Planta (REG-DIA-01)</h2>
+            <p class="sub" style="margin:0;">POES · Agua · Recepción/Purga · Cocción (PCC-1) · Antioxidantes (PPRO-2) · Metales/Tamices (PCC-2)</p>
+          </div>
+          <div class="no-print" style="display:flex; gap:8px;">
+            <button class="btn btn-sec btn-sm" onclick="exportCSV('diario')">Exportar CSV</button>
+            <button class="btn btn-sec btn-sm" onclick="window.print()">Imprimir A4</button>
+          </div>
+        </div>
+
+        <form id="formDiario" onsubmit="saveDiario(event)">
+          <div class="section-title">Identificación de Jornada y Lote</div>
+          <div class="grid-3">
+            <div><label>Fecha</label><input type="date" id="dFecha" required /></div>
+            <div><label>Código de Lote (YYDDD-AG3-XXX)</label><input type="text" id="dLote" placeholder="Ej: 26328-AG3-001" required /></div>
+            <div>
+              <label>Línea / Digestor Activo</label>
+              <select id="dLinea">
+                <option value="Digestor 1 - Subproductos Ovinos">Digestor 1 - Subproductos Ovinos</option>
+                <option value="Digestor 2 - Subproductos Ovinos">Digestor 2 - Subproductos Ovinos</option>
+                <option value="Deshuese / Carne Congelada Ovina">Deshuese / Carne Congelada Ovina</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="section-title">Bloque A & B — POES Pre-Operacional, Agua y Recepción / Purga</div>
+          <div class="grid-3">
+            <div>
+              <label>POES Pre-Op (Sectores A–E) y Filtro Sanitario</label>
+              <select id="dPoes">
+                <option value="C - Conforme">C - Conforme</option>
+                <option value="NC - No Conforme (Con Acción Correctiva)">NC - No Conforme</option>
+              </select>
+            </div>
+            <div><label>Cloro Libre en Agua (0,5 – 1,0 ppm)</label><input type="number" step="0.1" id="dCloro" placeholder="0.8" required /></div>
+            <div>
+              <label>MP 100% Ovina (Sin MER) y Purga (Flushing)</label>
+              <select id="dPurga">
+                <option value="OK - Sin cambio de especie">OK - Sin cambio de especie</option>
+                <option value="OK - Purga segregada (Tarjeta Naranja)">OK - Purga segregada (Tarjeta Naranja)</option>
+                <option value="NC - Retenido">NC - Retenido</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="section-title">Bloque C & D — Cocción (PCC-1), Antioxidantes (PPRO-2) y Cuerpos Extraños (PCC-2)</div>
+          <div class="grid-3">
+            <div><label>Temp. Cocción Digestor (°C) [LC: ≥ 100°C]</label><input type="number" step="0.1" id="dTemp" placeholder="121" required /></div>
+            <div><label>Tiempo Residencia (min) [LC: ≥ 60 min]</label><input type="number" id="dTiempo" placeholder="75" required /></div>
+            <div><label>Dosis AOX Calculada / Aplicada (ppm)</label><input type="number" id="dAox" placeholder="420" required /></div>
+          </div>
+          <div class="grid-3">
+            <div>
+              <label>Imanes y Tamices Tyler #7 (&lt;3%) / #10 (&lt;10%)</label>
+              <select id="dTamiz">
+                <option value="OK - Íntegros y limpios">OK - Íntegros y limpios</option>
+                <option value="NC - Desvío / Reproceso">NC - Desvío / Reproceso</option>
+              </select>
+            </div>
+            <div>
+              <label>Detector Metales (Fe 1,5 / NoFe 2,0 / SS 2,5 mm)</label>
+              <select id="dMetal">
+                <option value="OK - Rechazo verificado (Inicio/Medio/Cierre)">OK - Rechazo verificado (3 momentos)</option>
+                <option value="NC - Falla detección (Lote retenido)">NC - Falla detección (Lote retenido)</option>
+              </select>
+            </div>
+            <div><label>Producción Total (kg / Big Bags)</label><input type="text" id="dProd" placeholder="Ej: 4.500 kg (5 Big Bags)" required /></div>
+          </div>
+
+          <label>Observaciones / Acción Correctiva (completar solo si hubo NC o desvío)</label>
+          <input type="text" id="dObs" placeholder="Sin novedades / indicar contención si aplica..." />
+
+          <button type="submit" class="btn btn-ok no-print">Guardar Registro Diario</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="toolbar">
+          <h2 style="margin:0;">Historial de Jornadas Registradas</h2>
+          <input type="text" id="searchDiario" onkeyup="renderDiario()" placeholder="Buscar por lote o fecha..." style="max-width:240px; margin:0;" />
+        </div>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Fecha</th><th>Lote</th><th>POES / Cloro</th><th>MP / Purga</th>
+                <th>PCC-1 (Temp / Tiempo)</th><th>AOX (ppm)</th><th>PCC-2 (Tamiz / Metal)</th>
+                <th>Producción</th><th>Dictamen</th><th class="no-print">Acción</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyDiario"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: LIBERACION DE LOTES Y DESPACHO -->
+    <div id="tab-lotes" class="tab-panel hidden">
+      <div class="card">
+        <div class="toolbar">
+          <div>
+            <h2>Control Analítico de Lote (CoA) y Despacho FEFO (REG-LOT-01)</h2>
+            <p class="sub" style="margin:0;">Evaluación fisicoquímica/microbiológica y cálculo automático de vida útil remanente (365 días)</p>
+          </div>
+          <button class="btn btn-sec btn-sm no-print" onclick="exportCSV('lotes')">Exportar CSV</button>
+        </div>
+
+        <form id="formLote" onsubmit="saveLote(event)">
+          <div class="grid-3">
+            <div><label>Lote Juliano</label><input type="text" id="lLote" placeholder="26328-AG3-001" required /></div>
+            <div><label>Fecha Elaboración</label><input type="date" id="lFechaElab" required /></div>
+            <div><label>Fecha Despacho (si aplica)</label><input type="date" id="lFechaDesp" /></div>
+          </div>
+          <div class="grid-3">
+            <div><label>Humedad (%) [2,0 – 10,0%]</label><input type="number" step="0.1" id="lHum" placeholder="6.2" required /></div>
+            <div><label>Proteína Cruda (%) [48,0 – 60,0%]</label><input type="number" step="0.1" id="lProt" placeholder="53.5" required /></div>
+            <div><label>Grasa (%) [8,0 – 16,0%]</label><input type="number" step="0.1" id="lGrasa" placeholder="11.4" required /></div>
+          </div>
+          <div class="grid-3">
+            <div><label>Peróxidos (meq/kg) [≤ 10,0]</label><input type="number" step="0.1" id="lPerox" placeholder="3.8" required /></div>
+            <div><label>AOX Activo (ppm) [≥ 200 Nac / ≥ 400 Exp]</label><input type="number" id="lAox" placeholder="410" required /></div>
+            <div>
+              <label>Microbiología (Salmonella / Enterobacterias)</label>
+              <select id="lMicro">
+                <option value="CONFORME (Ausencia Salm. / Ent. OK)">CONFORME (Ausencia Salm. / Ent. OK)</option>
+                <option value="NO CONFORME - RETENER">NO CONFORME - RETENER</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div><label>Destino / Transporte y Precintos</label><input type="text" id="lTransp" placeholder="Ej: Destino Nacional · Dom. AA123BB · Precintos 4501-4502" /></div>
+            <div><label>N.º CoA / Observaciones</label><input type="text" id="lCoa" placeholder="CoA ISO 17025 N.º ..." /></div>
+          </div>
+          <button type="submit" class="btn btn-ok no-print">Registrar Evaluación de Lote</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>Lotes Evaluados y Estado de Liberación</h2>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Lote</th><th>Elab.</th><th>Hum / Prot / Grasa</th><th>Peróx / AOX</th>
+                <th>Microbiología</th><th>Vida Útil Remanente</th><th>Transporte / CoA</th><th>Estado</th><th class="no-print">Acción</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyLotes"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: CONTROLES SEMANALES / MENSUALES -->
+    <div id="tab-periodico" class="tab-panel hidden">
+      <div class="card">
+        <h2>Controles Periódicos Consolidados (REG-PER-01)</h2>
+        <p class="sub">Hisopados ambientales/superficies, lavado alcalino semanal, vidrios/plásticos y MIP</p>
+        <form id="formPer" onsubmit="savePer(event)">
+          <div class="grid-3">
+            <div><label>Fecha</label><input type="date" id="pFecha" required /></div>
+            <div>
+              <label>Tipo de Control</label>
+              <select id="pTipo">
+                <option value="Semanal - Hisopado Superficies (Salmonella / Enterob.)">Semanal - Hisopado Superficies</option>
+                <option value="Semanal - Lavado Alcalino Digestores y Titulación">Semanal - Lavado Alcalino Digestores</option>
+                <option value="Mensual - Auditoría Vidrios y Plásticos Rígidos">Mensual - Vidrios y Plásticos Rígidos</option>
+                <option value="Mensual - Control de Plagas (MIP / SENASA)">Mensual - Control de Plagas (MIP)</option>
+                <option value="Mensual - Verificación Balanzas y Termómetros">Mensual - Verificación Instrumentos</option>
+              </select>
+            </div>
+            <div>
+              <label>Resultado</label>
+              <select id="pEstado">
+                <option value="CONFORME">CONFORME</option>
+                <option value="NO CONFORME (CAPA abierta)">NO CONFORME (CAPA abierta)</option>
+              </select>
+            </div>
+          </div>
+          <label>Detalle / Valores Medidos / Protocolo de Laboratorio</label>
+          <input type="text" id="pDetalle" placeholder="Ej: HIS-C-01 Ausencia Salmonella; soda cáustica 2,5% v/v a 70°C..." required />
+          <button type="submit" class="btn btn-ok no-print">Guardar Control Periódico</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>Historial de Controles Periódicos</h2>
+        <table>
+          <thead><tr><th>Fecha</th><th>Control</th><th>Detalle / Evidencia</th><th>Estado</th><th class="no-print">Acción</th></tr></thead>
+          <tbody id="tbodyPer"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB 4: MANUALES Y DOCUMENTOS VIGENTES -->
+    <div id="tab-docs" class="tab-panel hidden">
+      <div class="card">
+        <h2>Índice Maestro de Documentación del SGC — Frigorífico Agrotres S.A.</h2>
+        <p class="sub">Documentos vigentes bajo normativa SENASA (Dec. 4238/68, Res. 205/14) y estándares de inocuidad</p>
+        <table>
+          <thead>
+            <tr><th>Código</th><th>Documento del Sistema de Gestión</th><th>Alcance Principal</th><th>Vigencia / Retención</th><th>Estado</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><b>MC-AG3-01</b></td><td>Manual de Calidad e Inocuidad Alimentaria</td><td>Política, alcance, trazabilidad, retiro/recall (≤ 4 hs), Food Fraud y Food Defense</td><td>Rev. 01 · Archivo 5 años</td><td><span class="badge b-ok">Vigente</span></td></tr>
+            <tr><td><b>MBPM-GR-01</b></td><td>Manual de Buenas Prácticas de Manufactura (BPM)</td><td>Higiene personal, filtro sanitario, control de agua (0,5–1,0 ppm), vidrio/plástico y MIP</td><td>Rev. 01 · Archivo 5 años</td><td><span class="badge b-ok">Vigente</span></td></tr>
+            <tr><td><b>MPOES-GR-01</b></td><td>Manual de Procedimientos Operativos Estandarizados de Saneamiento</td><td>Limpieza pre-op/op por sectores (A–E), limpieza en seco en zona limpia y lavado semanal</td><td>Rev. 01 · Archivo 5 años</td><td><span class="badge b-ok">Vigente</span></td></tr>
+            <tr><td><b>MHACCP-HCHO-01</b></td><td>Plan HACCP — Subproductos y Harina Ovina</td><td>Análisis de peligros, PCC-1 Cocción (≥100°C / ≥60 min), PPRO-2 AOX y PCC-2 Metales</td><td>Rev. 01 · Archivo 5 años</td><td><span class="badge b-ok">Vigente</span></td></tr>
+            <tr><td><b>PCSGC-GR-01</b></td><td>Procedimientos Complementarios (Purga, CoA y Muestreo)</td><td>Segregación cambio de especie (flushing), evaluación CoA ISO 17025 e incertidumbre</td><td>Rev. 01 · Archivo 5 años</td><td><span class="badge b-ok">Vigente</span></td></tr>
+            <tr><td><b>REG-DIA-01</b></td><td>Planilla Diaria Consolidada de Planta</td><td>Registro único operativo en 3 rondas diarias (35 min/día)</td><td>Activo en Portal</td><td><span class="badge b-ok">Activo</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const KEY_DIARIO = 'ag3_reg_diario_v1';
+    const KEY_LOTES  = 'ag3_reg_lotes_v1';
+    const KEY_PER    = 'ag3_reg_per_v1';
+
+    function todayISO() { return new Date().toISOString().split('T')[0]; }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      sessionStorage.setItem('ag3_logged', '1');
+      initApp();
+    }
+    function logout() {
+      sessionStorage.removeItem('ag3_logged');
+      location.reload();
+    }
+    function toggleHelp() {
+      document.getElementById('helpBox').classList.toggle('hidden');
+    }
+    function showTab(id, btn) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.getElementById(id).classList.remove('hidden');
+      btn.classList.add('active');
+    }
+
+    function getList(k) { return JSON.parse(localStorage.getItem(k) || '[]'); }
+    function setList(k, arr) { localStorage.setItem(k, JSON.stringify(arr)); }
+
+    function saveDiario(e) {
+      e.preventDefault();
+      const temp = parseFloat(document.getElementById('dTemp').value);
+      const tiempo = parseInt(document.getElementById('dTiempo').value, 10);
+      const poes = document.getElementById('dPoes').value;
+      const tamiz = document.getElementById('dTamiz').value;
+      const metal = document.getElementById('dMetal').value;
+      const ok = temp >= 100 && tiempo >= 60 && poes.startsWith('C') && tamiz.startsWith('OK') && metal.startsWith('OK');
+
+      const item = {
+        id: Date.now(),
+        fecha: document.getElementById('dFecha').value,
+        lote: document.getElementById('dLote').value.trim(),
+        linea: document.getElementById('dLinea').value,
+        poes,
+        cloro: document.getElementById('dCloro').value,
+        purga: document.getElementById('dPurga').value,
+        temp, tiempo,
+        aox: document.getElementById('dAox').value,
+        tamiz, metal,
+        prod: document.getElementById('dProd').value.trim(),
+        obs: document.getElementById('dObs').value.trim(),
+        estado: ok ? 'CONFORME' : 'DESVÍO / RETENER'
+      };
+      const list = getList(KEY_DIARIO);
+      list.unshift(item);
+      setList(KEY_DIARIO, list);
+      e.target.reset();
+      document.getElementById('dFecha').value = todayISO();
+      renderDiario();
+    }
+
+    function renderDiario() {
+      const q = (document.getElementById('searchDiario').value || '').toLowerCase();
+      const list = getList(KEY_DIARIO).filter(x => x.lote.toLowerCase().includes(q) || x.fecha.includes(q));
+      document.getElementById('kpiDiarios').textContent = getList(KEY_DIARIO).length;
+      document.getElementById('kpiUltimoLote').textContent = list[0] ? list[0].lote : '—';
+      document.getElementById('kpiEstadoHoy').textContent = list[0] ? list[0].estado : 'Sin carga';
+
+      const tbody = document.getElementById('tbodyDiario');
+      tbody.innerHTML = list.map(r => `
+        <tr>
+          <td>${r.fecha}</td>
+          <td><b>${r.lote}</b><br><small style="color:#64748b">${r.linea}</small></td>
+          <td>${r.poes.split(' ')[0]} · Cl: ${r.cloro} ppm</td>
+          <td>${r.purga}</td>
+          <td>${r.temp} °C / ${r.tiempo} min</td>
+          <td>${r.aox} ppm</td>
+          <td>Tamiz: ${r.tamiz.split(' ')[0]} · Metal: ${r.metal.split(' ')[0]}</td>
+          <td>${r.prod}${r.obs ? '<br><small><i>Obs: '+r.obs+'</i></small>' : ''}</td>
+          <td><span class="badge ${r.estado==='CONFORME'?'b-ok':'b-err'}">${r.estado}</span></td>
+          <td class="no-print"><button class="btn btn-sec btn-sm" onclick="delItem('${KEY_DIARIO}',${r.id},renderDiario)">Borrar</button></td>
+        </tr>
+      `).join('') || '<tr><td colspan="10" style="text-align:center;color:#64748b;">Aún no hay registros diarios cargados.</td></tr>';
+    }
+
+    function saveLote(e) {
+      e.preventDefault();
+      const hum = parseFloat(document.getElementById('lHum').value);
+      const prot = parseFloat(document.getElementById('lProt').value);
+      const grasa = parseFloat(document.getElementById('lGrasa').value);
+      const perox = parseFloat(document.getElementById('lPerox').value);
+      const aox = parseFloat(document.getElementById('lAox').value);
+      const micro = document.getElementById('lMicro').value;
+      const fElab = document.getElementById('lFechaElab').value;
+      const fDesp = document.getElementById('lFechaDesp').value;
+
+      let remStr = 'En stock (sin despachar)';
+      if (fElab && fDesp) {
+        const d1 = new Date(fElab);
+        const d2 = new Date(fDesp);
+        const venc = new Date(d1.getTime() + 365 * 86400000);
+        const pct = Math.round(((venc - d2) / (365 * 86400000)) * 100);
+        remStr = pct + '% restante';
+      }
+
+      const ok = hum >= 2 && hum <= 10 && prot >= 48 && prot <= 60 && grasa >= 8 && grasa <= 16 && perox <= 10 && aox >= 200 && micro.startsWith('CONFORME');
+      const item = {
+        id: Date.now(),
+        lote: document.getElementById('lLote').value.trim(),
+        fElab, fDesp, hum, prot, grasa, perox, aox, micro, remStr,
+        transp: document.getElementById('lTransp').value.trim(),
+        coa: document.getElementById('lCoa').value.trim(),
+        estado: ok ? 'LIBERADO' : 'RETENER / REVISAR'
+      };
+      const list = getList(KEY_LOTES);
+      list.unshift(item);
+      setList(KEY_LOTES, list);
+      e.target.reset();
+      renderLotes();
+    }
+
+    function renderLotes() {
+      const list = getList(KEY_LOTES);
+      document.getElementById('tbodyLotes').innerHTML = list.map(r => `
+        <tr>
+          <td><b>${r.lote}</b></td>
+          <td>${r.fElab}</td>
+          <td>H: ${r.hum}% · P: ${r.prot}% · G: ${r.grasa}%</td>
+          <td>Peróx: ${r.perox} · AOX: ${r.aox} ppm</td>
+          <td>${r.micro}</td>
+          <td>${r.remStr}</td>
+          <td>${r.transp || '—'}<br><small>${r.coa || ''}</small></td>
+          <td><span class="badge ${r.estado==='LIBERADO'?'b-ok':'b-err'}">${r.estado}</span></td>
+          <td class="no-print"><button class="btn btn-sec btn-sm" onclick="delItem('${KEY_LOTES}',${r.id},renderLotes)">Borrar</button></td>
+        </tr>
+      `).join('') || '<tr><td colspan="9" style="text-align:center;color:#64748b;">Aún no hay lotes cargados.</td></tr>';
+    }
+
+    function savePer(e) {
+      e.preventDefault();
+      const item = {
+        id: Date.now(),
+        fecha: document.getElementById('pFecha').value,
+        tipo: document.getElementById('pTipo').value,
+        estado: document.getElementById('pEstado').value,
+        detalle: document.getElementById('pDetalle').value.trim()
+      };
+      const list = getList(KEY_PER);
+      list.unshift(item);
+      setList(KEY_PER, list);
+      e.target.reset();
+      document.getElementById('pFecha').value = todayISO();
+      renderPer();
+    }
+
+    function renderPer() {
+      const list = getList(KEY_PER);
+      document.getElementById('tbodyPer').innerHTML = list.map(r => `
+        <tr>
+          <td>${r.fecha}</td>
+          <td><b>${r.tipo}</b></td>
+          <td>${r.detalle}</td>
+          <td><span class="badge ${r.estado==='CONFORME'?'b-ok':'b-err'}">${r.estado}</span></td>
+          <td class="no-print"><button class="btn btn-sec btn-sm" onclick="delItem('${KEY_PER}',${r.id},renderPer)">Borrar</button></td>
+        </tr>
+      `).join('') || '<tr><td colspan="5" style="text-align:center;color:#64748b;">Sin controles periódicos cargados.</td></tr>';
+    }
+
+    function delItem(key, id, cb) {
+      if (!confirm('¿Eliminar este registro?')) return;
+      setList(key, getList(key).filter(x => x.id !== id));
+      cb();
+    }
+
+    function exportCSV(type) {
+      const key = type === 'diario' ? KEY_DIARIO : KEY_LOTES;
+      const rows = getList(key);
+      if (!rows.length) { alert('No hay registros para exportar.'); return; }
+      const headers = Object.keys(rows[0]);
+      const csv = [headers.join(';'), ...rows.map(r => headers.map(h => `"${String(r[h] ?? '').replace(/"/g,'""')}"`).join(';'))].join('\n');
+      const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `Agrotres_${type}_${todayISO()}.csv`;
+      a.click();
+    }
+
+    function initApp() {
+      document.getElementById('loginView').classList.add('hidden');
+      document.getElementById('appView').classList.remove('hidden');
+      document.getElementById('btnLogout').classList.remove('hidden');
+      document.getElementById('dFecha').value = todayISO();
+      document.getElementById('pFecha').value = todayISO();
+      renderDiario(); renderLotes(); renderPer();
+    }
+
+    if (sessionStorage.getItem('ag3_logged') === '1') initApp();
+  </script>
+</body>
+</html>
